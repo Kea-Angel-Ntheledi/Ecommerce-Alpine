@@ -218,3 +218,9 @@
                     }
                 }
             }));
+             // Alpine.js data component for managing the product detail modal
+            Alpine.data('productDetail', () => ({
+                product: null,
+                loading: false,
+                error: null,
+                async fetchProduct(id) {
