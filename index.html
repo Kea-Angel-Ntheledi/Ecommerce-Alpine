@@ -92,7 +92,7 @@
 
     <!-- Product Grid -->
     <main class="max-w-screen-xl mx-auto mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <template x-for="product in paginatedProducts" :key="product.id">
+        <template x-for="product in filteredProducts" :key="product.id">
             <div
                 class="bg-white p-4 rounded shadow hover:shadow-lg cursor-pointer transform hover:scale-105 transition-transform duration-300">
                 <div @click="openModal(product.id)">
@@ -126,87 +126,84 @@
                                   d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"></path>
                         </svg>
                     </button>
+                    <button @click="openModal(product.id)"
+                            class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-300">
+                        View Details
+                    </button>
                 </div>
             </div>
         </template>
     </main>
 
-    <!-- Pagination -->
-    <div class="flex justify-center mt-8">
-        <template x-for="page in totalPages" :key="page">
-            <button @click="changePage(page)" :class="{ 'bg-gray-700 text-white': page === currentPage }"
-                    class="px-4 py-2 mx-1 border rounded-md">
-                <span x-text="page"></span>
-            </button>
-        </template>
-    </div>
-
-    <!-- Product Modal -->
-    <div x-show="modalOpen" @click.away="closeModal" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-        <div class="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
-            <div class="flex justify-end">
-                <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
+    <!-- Product Detail Modal -->
+    <template x-if="modalOpen">
+        <div
+            class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300">
+            <div class="bg-white rounded-lg p-4 w-full max-w-lg relative">
+                <button @click="closeModal"
+                        class="absolute top-0 right-0 mt-2 mr-2 text-gray-500 hover:text-gray-700 focus:outline-none">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                          xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
-            </div>
-            <div class="flex flex-col lg:flex-row lg:space-x-6">
-                <img :src="selectedProduct.image" :alt="selectedProduct.title" class="w-full lg:w-1/3 object-cover rounded-lg mb-6 lg:mb-0">
-                <div class="flex-1">
-                    <h2 class="text-2xl font-bold mb-2" x-text="selectedProduct.title"></h2>
-                    <p class="text-gray-600 mb-4" x-text="selectedProduct.description"></p>
-                    <p class="text-lg font-semibold mb-2" x-text="'$' + selectedProduct.price"></p>
-                    <button @click="addToCart(selectedProduct)" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">Add to Cart</button>
+                <img :src="selectedProduct.image" :alt="selectedProduct.title" class="h-48 mt-3 object-contain rounded">
+                <h2 class="text-2xl font-bold mt-4" x-text="selectedProduct.title"></h2>
+                <p class="text-lg text-gray-700 mt-2" x-text="'$' + selectedProduct.price"></p>
+                <p class="mt-4" x-text="selectedProduct.description"></p>
+                <div class="flex items-center mt-4">
+                    <button @click="addToCart(selectedProduct)"
+                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">
+                        Add to Cart
+                    </button>
+                    <button @click="closeModal"
+                            class="bg-gray-500 text-white px-4 py-2 rounded ml-4 hover:bg-gray-600 transition duration-300">
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
+    </template>
 </div>
+
 <script>
     function shoppingCart() {
         return {
+            loading: true,
             products: [],
             filteredProducts: [],
             categories: [],
-            selectedCategory: '',
             searchTerm: '',
+            selectedCategory: '',
             sorting: 'default',
-            currentPage: 1,
-            itemsPerPage: 8,
-            loading: true,
             modalOpen: false,
-            selectedProduct: {},
+            selectedProduct: null,
             navbarOpen: false,
-            cart: [],
-            likes: [],
+
             init() {
-                fetch('https://fakestoreapi.com/products')
-                    .then((response) => response.json())
-                    .then((data) => {
-                        this.products = data;
-                        this.filteredProducts = data;
-                        this.categories = [...new Set(data.map((product) => product.category))];
-                        this.loading = false;
-                    });
+                this.fetchProducts();
             },
-            toggleNavbar() {
-                this.navbarOpen = !this.navbarOpen;
+
+            async fetchProducts() {
+                this.loading = true;
+                const res = await fetch('https://fakestoreapi.com/products');
+                const data = await res.json();
+                this.products = data;
+                this.filteredProducts = data;
+                this.categories = [...new Set(data.map(product => product.category))];
+                this.loading = false;
             },
+
             filterProducts() {
-                this.filteredProducts = this.products.filter((product) => {
-                    return this.selectedCategory === '' || product.category === this.selectedCategory;
-                });
-                this.searchProducts();
-            },
-            searchProducts() {
-                this.filteredProducts = this.filteredProducts.filter((product) => {
-                    return product.title.toLowerCase().includes(this.searchTerm.toLowerCase());
-                });
+                if (this.selectedCategory === '') {
+                    this.filteredProducts = this.products;
+                } else {
+                    this.filteredProducts = this.products.filter(product => product.category === this.selectedCategory);
+                }
                 this.sortProducts();
             },
+
             sortProducts() {
                 if (this.sorting === 'low') {
                     this.filteredProducts.sort((a, b) => a.price - b.price);
@@ -214,26 +211,28 @@
                     this.filteredProducts.sort((a, b) => b.price - a.price);
                 }
             },
-            changePage(page) {
-                this.currentPage = page;
+
+            searchProducts() {
+                this.filteredProducts = this.products.filter(product => product.title.toLowerCase().includes(this.searchTerm.toLowerCase()));
+                this.filterProducts();
             },
-            get totalPages() {
-                return Math.ceil(this.filteredProducts.length / this.itemsPerPage);
-            },
-            get paginatedProducts() {
-                const start = (this.currentPage - 1) * this.itemsPerPage;
-                return this.filteredProducts.slice(start, start + this.itemsPerPage);
-            },
+
             openModal(productId) {
-                this.selectedProduct = this.products.find((product) => product.id === productId);
+                this.selectedProduct = this.products.find(product => product.id === productId);
                 this.modalOpen = true;
             },
+
             closeModal() {
                 this.modalOpen = false;
+                this.selectedProduct = null;
             },
+
             addToCart(product) {
-                this.cart.push(product);
-                alert('Product added to cart');
+                alert(`${product.title} added to cart!`);
+            },
+
+            toggleNavbar() {
+                this.navbarOpen = !this.navbarOpen;
             },
             toggleLike(product) {
                 product.liked = !product.liked;
@@ -243,7 +242,16 @@
                     this.likes = this.likes.filter((likedProduct) => likedProduct.id !== product.id);
                 }
             },
-        };
+            searchProducts() {
+                    if (this.searchTerm === '') {
+                        this.filteredProducts = this.products;
+                    } else {
+                        this.filteredProducts = this.products.filter(product =>
+                            product.title.toLowerCase().includes(this.searchTerm.toLowerCase())
+                        );
+                    }
+                },
+        }
     }
 </script>
 </body>
