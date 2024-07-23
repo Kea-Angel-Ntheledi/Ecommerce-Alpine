@@ -96,3 +96,11 @@
                     <input x-model="searchTerm" @input="searchProducts()"
                         class="p-2 border rounded-lg text-sm" type="text" placeholder="Search Products"> <!-- Search input -->
                 </div>
+                 <select x-model="sorting" @change="sortProducts()"
+                    class="p-2 border rounded-lg text-sm"> <!-- Sorting dropdown -->
+                    <option value="default">Default</option>
+                    <option value="low">Price: Low to High</option>
+                    <option value="high">Price: High to Low</option>
+                </select>
+            </div>
+        </div>
