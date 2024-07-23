@@ -149,3 +149,17 @@
             </div>
         </div>
     </div>
+
+        <!-- Alpine.js Component Initialization -->
+    <script>
+        // Initialize Alpine.js store and components when the DOM is ready
+        document.addEventListener('alpine:init', () => {
+            // Alpine.js store for managing filters and selected product
+            Alpine.store('filter', {
+                categories: [],
+                selectedCategory: null,
+                selectedProduct: null,
+                handleFilter(category) {
+                    this.selectedCategory = category;
+                }
+            });
