@@ -117,3 +117,18 @@
                         <button @click="$store.filter.selectedProduct = product; fetchSingleProduct(product.id)"
                             class="block mt-4 w-full bg-gray-800 text-white py-2 rounded-lg text-center">View
                             Details</button> <!-- View details button -->
+                         </div>
+                    </div>
+            </template>
+        </div>
+
+         <!-- Product Detail Modal -->
+        <div x-show="$store.filter.selectedProduct" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg p-6 max-w-lg w-full"> <!-- Modal content -->
+                <button @click="$store.filter.selectedProduct = null"
+                    class="absolute top-2 right-2 text-gray-700 hover:text-gray-900"> <!-- Close button -->
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /> <!-- Close icon SVG path -->
+                    </svg>
+                </button>
