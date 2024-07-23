@@ -132,3 +132,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /> <!-- Close icon SVG path -->
                     </svg>
                 </button>
+                <template x-if="loading">
+                    <p>Loading...</p> <!-- Loading message -->
+                </template>
+                <template x-if="!loading && product">
+                    <div>
+                        <img :src="product.image" alt="Product Image" class="w-full h-64 object-cover rounded-lg mb-4"> <!-- Product image -->
+                        <h2 class="text-2xl font-semibold mb-2" x-text="product.title"></h2> <!-- Product title -->
+                        <p class="text-gray-700 mb-4" x-text="product.description"></p> <!-- Product description -->
+                        <span class="text-xl font-bold" x-text="`$${product.price}`"></span> <!-- Product price -->
+                    </div>
