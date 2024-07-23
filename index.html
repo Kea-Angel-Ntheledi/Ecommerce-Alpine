@@ -104,3 +104,16 @@
                 </select>
             </div>
         </div>
+
+        <!-- Products section -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"> <!-- Product grid -->
+            <template x-for="product in filteredProducts" :key="product.id">
+                <div class="border rounded-lg shadow-md overflow-hidden"> <!-- Product card -->
+                    <img :src="product.image" alt="Product Image" class="w-full h-48 object-cover"> <!-- Product image -->
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-2" x-text="product.title"></h3> <!-- Product title -->
+                        <p class="text-gray-700 mb-2" x-text="product.category"></p> <!-- Product category -->
+                        <span class="text-xl font-bold" x-text="`$${product.price}`"></span> <!-- Product price -->
+                        <button @click="$store.filter.selectedProduct = product; fetchSingleProduct(product.id)"
+                            class="block mt-4 w-full bg-gray-800 text-white py-2 rounded-lg text-center">View
+                            Details</button> <!-- View details button -->
