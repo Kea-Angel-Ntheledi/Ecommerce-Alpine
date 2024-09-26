@@ -1,1 +1,3 @@
-# KEANTH501_BCL2401_GroupC_Kealeboga-A-Ntheledi-JSF01-main
+## Alpine e-commerce store
+
+### Project Demo: https://alpineecommerce.netlify.app/
